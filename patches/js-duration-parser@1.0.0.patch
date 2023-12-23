@@ -1,0 +1,311 @@
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..c248923c2176010db0b67300aa005c9d4f493d5b
+--- /dev/null
++++ b/dist/index.d.ts
+@@ -0,0 +1,5 @@
++declare const _exports: {
++    "js-duration-parser": {};
++};
++export = _exports;
++export const _js_duration_parser: {};
+diff --git a/jsconfig.json b/jsconfig.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..5232ec273fc9949965e0f7e7a9f8f92d5f663c17
+--- /dev/null
++++ b/jsconfig.json
+@@ -0,0 +1,11 @@
++{
++  "compilerOptions": {
++    "module": "node16",
++    "moduleResolution": "node16",
++    "noEmit": false,
++    "emitDeclarationOnly": true,
++    "declaration": true
++  },
++  "include": ["src", "dist"],
++  "exclude": ["node_modules"]
++}
+diff --git a/package.json b/package.json
+index 30a702b1a04d9a17f4919f4745de79638831815f..dcbbbfbbc8d425abbf96c9f34cfe138fc919cc77 100644
+--- a/package.json
++++ b/package.json
+@@ -3,6 +3,14 @@
+   "version": "1.0.0",
+   "description": "Converter between human readable duration and time units",
+   "main": "./dist/index.js",
++  "exports": {
++    ".": {
++      "require": "./dist/index.js"
++    },
++    "./src/*": {
++      "import": "./src/*"
++    }
++  },
+   "scripts": {
+     "test": "jest",
+     "test-coverage": "jest --coverage",
+@@ -37,6 +45,7 @@
+     "jest": "^25.0.0",
+     "jsdoc-to-markdown": "^8.0.0",
+     "terser-webpack-plugin": "^5.3.9",
++    "typescript": "^5.3.3",
+     "webpack": "^5.88.1",
+     "webpack-cli": "4.2.0"
+   },
+diff --git a/src/DurationParser.d.ts b/src/DurationParser.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..0e01ffd67fe42cb63af2f52e7cd0ed2c14e8b895
+--- /dev/null
++++ b/src/DurationParser.d.ts
+@@ -0,0 +1,27 @@
++export default DurationParser;
++declare class DurationParser {
++    /**
++     * @param {string} locale Locale used for parsing duration
++     * @param {TimeIdentifiers|null} customTimeIdentifiers Custom TimeIdentifiers object with added localized identifiers
++     */
++    constructor(locale?: string, customTimeIdentifiers?: TimeIdentifiers | null);
++    /**
++     * Return duration length from input expressed in target units
++     *
++     * @param {string} input Input duration string expressed in human-like pattern
++     * @param targetUnit Identifier of target time unit
++     * @returns {number|null}
++     */
++    parse(input: string, targetUnit?: string): number | null;
++    /**
++     * Create duration string from time amount
++     *
++     * @param time input time amount expressed in source time unit
++     * @param sourceUnit Source time unit identifier
++     * @param groupSeparator Group separator used to join time groups in output duration string
++     * @returns {string|null}
++     */
++    compose(time: any, sourceUnit?: string, groupSeparator?: string): string | null;
++    #private;
++}
++import TimeIdentifiers from "./TimeIdentifiers";
+diff --git a/src/DurationParser.test.d.ts b/src/DurationParser.test.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb0ff5c3b541f646105198ee23ac0fc3d805023e
+--- /dev/null
++++ b/src/DurationParser.test.d.ts
+@@ -0,0 +1 @@
++export {};
+diff --git a/src/DurationTranslator.d.ts b/src/DurationTranslator.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..ba218216506d6a83fe9a8ae54569cdbd28138032
+--- /dev/null
++++ b/src/DurationTranslator.d.ts
+@@ -0,0 +1,18 @@
++export default DurationTranslator;
++declare class DurationTranslator {
++    /**
++     * @param {TimeIdentifiers|null} timeIdentifiers
++     */
++    constructor(timeIdentifiers?: TimeIdentifiers | null);
++    /**
++     * Translate duration string from source to target locale
++     *
++     * @param duration Input duration string
++     * @param sourceLocale Source locale name
++     * @param targetLocale Target locale name
++     * @returns {string|null}
++     */
++    translate(duration: any, sourceLocale: any, targetLocale: any): string | null;
++    #private;
++}
++import TimeIdentifiers from "./TimeIdentifiers";
+diff --git a/src/DurationTranslator.test.d.ts b/src/DurationTranslator.test.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb0ff5c3b541f646105198ee23ac0fc3d805023e
+--- /dev/null
++++ b/src/DurationTranslator.test.d.ts
+@@ -0,0 +1 @@
++export {};
+diff --git a/src/DurationValidator.d.ts b/src/DurationValidator.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..4d43366e4333caf0df8d1fa32c11ee131d850270
+--- /dev/null
++++ b/src/DurationValidator.d.ts
+@@ -0,0 +1,20 @@
++export default DurationValidator;
++/**
++ * Validate duration string without doing a conversion
++ */
++declare class DurationValidator {
++    /**
++     * @param {TimeIdentifiers|null} timeIdentifiers
++     */
++    constructor(timeIdentifiers?: TimeIdentifiers | null);
++    /**
++     *  Validate if duration string meets all syntactic requirements
++     *
++     * @param {string} duration Duration string expressed in human-like format
++     * @param {string} locale Locale name which is used in duration string
++     * @returns {boolean}
++     */
++    validate(duration: string, locale?: string): boolean;
++    #private;
++}
++import TimeIdentifiers from "./TimeIdentifiers";
+diff --git a/src/DurationValidator.test.d.ts b/src/DurationValidator.test.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb0ff5c3b541f646105198ee23ac0fc3d805023e
+--- /dev/null
++++ b/src/DurationValidator.test.d.ts
+@@ -0,0 +1 @@
++export {};
+diff --git a/src/TimeConverter.d.ts b/src/TimeConverter.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..9b258ec5457244f87e2450d521b550c840c3b86b
+--- /dev/null
++++ b/src/TimeConverter.d.ts
+@@ -0,0 +1,16 @@
++export default TimeConverter;
++/**
++ * Allow time conversion between units
++ */
++declare class TimeConverter {
++    /**
++     * Convert time number expressed in source unit to number expressed in target unit; both units are basic one (en)
++     *
++     * @param {number} time Input time number
++     * @param {string} sourceUnit Source time unit
++     * @param {string} targetUnit Target time unit
++     * @returns {number}
++     */
++    convert(time: number, sourceUnit: string, targetUnit: string): number;
++    #private;
++}
+diff --git a/src/TimeConverter.test.d.ts b/src/TimeConverter.test.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb0ff5c3b541f646105198ee23ac0fc3d805023e
+--- /dev/null
++++ b/src/TimeConverter.test.d.ts
+@@ -0,0 +1 @@
++export {};
+diff --git a/src/TimeGroups.d.ts b/src/TimeGroups.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..d31949944192b40c3d50d2a04231a038370899d1
+--- /dev/null
++++ b/src/TimeGroups.d.ts
+@@ -0,0 +1,49 @@
++export default TimeGroups;
++/**
++ * Manage time groups and make some operations on them.
++ */
++declare class TimeGroups {
++    /**
++     * @param {TimeIdentifiers|null} timeIdentifiers
++     */
++    constructor(timeIdentifiers?: TimeIdentifiers | null);
++    /**
++     * Extract array of time groups which are in duration string
++     *
++     * @param {string} duration Whole duration string
++     * @param {string} locale Locale name of time identifiers used in duration string
++     * @returns {string[]}
++     */
++    extractTimeGroups(duration: string, locale: string): string[];
++    /**
++     * Parse single time group to object having information about both unit and number of it
++     *
++     * @param {string} timeGroup Single time group
++     * @param {string} locale Locale name of time unit used in time group
++     * @returns {{unit: *, time: number}|null}
++     */
++    parseTimeGroup(timeGroup: string, locale: string): {
++        unit: any;
++        time: number;
++    } | null;
++    /**
++     * Build a single time group from object created while parsing a group
++     *
++     * @param {{unit: *, time: number}} parsedTime Object of parsed time group
++     * @returns {string}
++     */
++    buildTimeGroup(parsedTime: {
++        unit: any;
++        time: number;
++    }): string;
++    /**
++     * Compose the whole duration string from array of time groups; given separator is used to join all groups
++     *
++     * @param {string[]} timeGroups Array of time groups in the same locale as for output
++     * @param {string} groupSeparator Separator between every group in output duration string
++     * @returns {string}
++     */
++    composeDuration(timeGroups: string[], groupSeparator?: string): string;
++    #private;
++}
++import TimeIdentifiers from "./TimeIdentifiers";
+diff --git a/src/TimeGroups.test.d.ts b/src/TimeGroups.test.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb0ff5c3b541f646105198ee23ac0fc3d805023e
+--- /dev/null
++++ b/src/TimeGroups.test.d.ts
+@@ -0,0 +1 @@
++export {};
+diff --git a/src/TimeIdentifiers.d.ts b/src/TimeIdentifiers.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..09628fa8e4989ac3e2730155807326dcb3cbb731
+--- /dev/null
++++ b/src/TimeIdentifiers.d.ts
+@@ -0,0 +1,36 @@
++export default TimeIdentifiers;
++/**
++ * Manage time identifiers used in duration string. This class allows to use time identifiers from many languages.
++ */
++declare class TimeIdentifiers {
++    /**
++     * Register new time identifiers for the given locale
++     *
++     * @param {string} locale Name of locale for which time identifiers are registered
++     * @param newIdentifiers New time identifiers
++     * @returns {TimeIdentifiers}
++     */
++    add(locale: string, newIdentifiers: any): TimeIdentifiers;
++    /**
++     * Return time identifiers for the given locale name; if not registered, return identifiers for 'en' locale
++     *
++     * @param {string} locale Locale name
++     * @returns {{s: string, d: string, w: string, h: string, m: string}}
++     */
++    get(locale: string): {
++        s: string;
++        d: string;
++        w: string;
++        h: string;
++        m: string;
++    };
++    /**
++     * Return internal unit (en) for the time unit in the specified locale
++     *
++     * @param {string} identifier Localized time identifier
++     * @param {string} locale Locale name
++     * @returns {string|null}
++     */
++    getInternalUnit(identifier: string, locale: string): string | null;
++    #private;
++}
+diff --git a/src/TimeIdentifiers.test.d.ts b/src/TimeIdentifiers.test.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb0ff5c3b541f646105198ee23ac0fc3d805023e
+--- /dev/null
++++ b/src/TimeIdentifiers.test.d.ts
+@@ -0,0 +1 @@
++export {};
+diff --git a/src/index.d.ts b/src/index.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..afe02eb524de75af1bdfd4cf100da62b0de5e9ce
+--- /dev/null
++++ b/src/index.d.ts
+@@ -0,0 +1,6 @@
++export default DurationParser;
++import DurationTranslator from "./DurationTranslator";
++import DurationValidator from "./DurationValidator";
++import TimeIdentifiers from "./TimeIdentifiers";
++import DurationParser from "./DurationParser";
++export { DurationTranslator, DurationValidator, TimeIdentifiers };
